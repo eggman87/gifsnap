@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.eggman.gifsnap.GifSnap;
+import com.eggman.gifsnap.OnGifSnapListener;
 
 import java.util.UUID;
 
@@ -118,15 +119,15 @@ public class SnapActivity extends Activity {
                             handler.postDelayed(this, 100);
                         }
                     }, 100);
-                    Runnable runnable = new Runnable() {
+
+                    GifSnap gifSnap = new GifSnap(findViewById(android.R.id.content));
+                    gifSnap.recordGif("GifSnap", 10, new OnGifSnapListener() {
                         @Override
-                        public void run() {
-                            GifSnap gifSnap = new GifSnap(findViewById(android.R.id.content));
-                            gifSnap.recordGif("GifSnap", 10);
+                        public void onGifCompleted(String gifPath) {
+
                         }
-                    };
-                    Thread thread = new Thread(runnable);
-                    thread.start();
+                    });
+
 
                 } else {
                     mSystemUiHider.show();

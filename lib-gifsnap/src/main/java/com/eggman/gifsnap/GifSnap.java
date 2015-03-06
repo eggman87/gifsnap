@@ -55,7 +55,26 @@ public class GifSnap {
      * @param numberOfFrames the number of frames to record.
      * @return the full file path of the gif.
      */
-    public String recordGif(String gifName, int numberOfFrames) {
+    public void recordGif(final String gifName, final int numberOfFrames, final OnGifSnapListener listener) {
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                final String gifUrl = startRecording(gifName, numberOfFrames);
+                //callback with gif url on the main thread.
+                Handler handler = new Handler(Looper.getMainLooper());
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        listener.onGifCompleted(gifUrl);
+                    }
+                });
+            }
+        };
+        Thread thread = new Thread(runnable);
+        thread.start();
+    }
+
+    private String startRecording(String gifName, int numberOfFrames) {
         long startTime = Calendar.getInstance().getTimeInMillis();
         Log.d(TAG, "starting gif creation process for gif with name: " + gifName + " at " +startTime + "ms");
 
@@ -191,4 +210,5 @@ public class GifSnap {
     private String getStorageDirectory() {
         return storageDirectory == null ? Environment.getExternalStorageDirectory().toString():storageDirectory;
     }
+
 }
