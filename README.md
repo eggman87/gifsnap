@@ -7,7 +7,7 @@ Example gif created from app:
 
 This library uses Gif Encoder from https://github.com/nbadal/android-gif-encoder. Please follow any license restrictions from that code (AndroidGifEncoder). 
 
-Example Usage, which will record a gif with 40 frames of the view contentView. Keep in mind that a lot of processing is done on background threads....callback is on UI thread. 
+Example Usage, which will record a gif with 40 frames of the view android.R.id.content (root view of an activity). Keep in mind that a lot of processing is done on background threads....callback is on UI thread. 
 ```java
 GifSnap gifSnap = new GifSnap(findViewById(android.R.id.content));
 gifSnap.recordGif("GifSnap", 40, new OnGifSnapListener() {
