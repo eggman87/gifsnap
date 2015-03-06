@@ -53,7 +53,6 @@ public class GifSnap {
      * Records a gif of the view supplied into the constructor.
      * @param gifName the name of the gif you would like to create (will overwrite if already exists).
      * @param numberOfFrames the number of frames to record.
-     * @return the full file path of the gif.
      */
     public void recordGif(final String gifName, final int numberOfFrames, final OnGifSnapListener listener) {
         Runnable runnable = new Runnable() {
