@@ -23,11 +23,36 @@ public class GifSnap {
     private View viewToScreenshot;
     private static final String TAG = "GifSnap";
 
+    private String storageDirectory;
+
+    /**
+     * Initializes the GifSnap
+     *
+     * Default storage location is in external storage directory.
+     *
+     * @param viewToScreenshot the view you wish to create a gif of.
+     */
     public GifSnap(View viewToScreenshot) {
         this.viewToScreenshot = viewToScreenshot;
     }
 
-    public void recordGif(String gifName, int numberOfFrames) {
+    /**
+     * Initializes the GifSnap
+     * @param viewToScreenshot the view you wish to create a gif of.
+     * @param storageDirectoryPath the directory you wish to store the .gif.
+     */
+    public GifSnap(View viewToScreenshot, String storageDirectoryPath) {
+        this.viewToScreenshot = viewToScreenshot;
+        this.storageDirectory = storageDirectoryPath;
+    }
+
+    /**
+     * Records a gif of the view supplied into the constructor.
+     * @param gifName the name of the gif you would like to create (will overwrite if already exists).
+     * @param numberOfFrames the number of frames to record.
+     * @return the full file path of the gif.
+     */
+    public String recordGif(String gifName, int numberOfFrames) {
         long startTime = Calendar.getInstance().getTimeInMillis();
         Log.d(TAG, "starting gif creation process for gif with name: " + gifName + " at " +startTime + "ms");
 
@@ -73,10 +98,10 @@ public class GifSnap {
         Log.d(TAG, "created gif located at " + gifPath);
         Log.d(TAG, "total gif creation time: " + String.valueOf(endTime-startTime) + "ms");
 
+        return gifPath;
     }
 
-
-    public void takeScreenShot(View view, String path) {
+    private void takeScreenShot(View view, String path) {
         Bitmap bitmap = Bitmap.createBitmap(view.getWidth(),
                 view.getHeight(), Bitmap.Config.RGB_565);
         Canvas canvas = new Canvas(bitmap);
@@ -97,10 +122,14 @@ public class GifSnap {
     }
 
     private String getImagePathForFrame(int frame) {
-        return Environment.getExternalStorageDirectory().toString() + "/" + String.valueOf(frame) + ".png";
+        return getStorageDirectory()  + "/" + String.valueOf(frame) + ".png";
     }
 
     private String getGifPathForName(String gifName) {
-       return  Environment.getExternalStorageDirectory().toString() + "/" + gifName + ".gif";
+        return   getStorageDirectory() +  "/" + gifName + ".gif";
+    }
+
+    private String getStorageDirectory() {
+        return storageDirectory == null ? Environment.getExternalStorageDirectory().toString():storageDirectory;
     }
 }
