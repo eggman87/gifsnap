@@ -143,7 +143,7 @@ public class GifSnap {
             String path = getImagePathForFrame(frame);
             takeScreenShot(viewToScreenshot, path);
             //take a screenshot evey x ms
-            Thread.sleep(100);
+            Thread.sleep(85);
         }
 
         //wait a bit since we are firing off new threads to process frames and the last one might not have finished yet. Lazy...I know.
