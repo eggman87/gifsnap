@@ -62,14 +62,32 @@ public class GifSnap {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         encoder.start(outputStream);
 
-        for (int frame=0; frame < numberOfFrames; frame++) {
-            Log.d(TAG, "[Screenshot] processing frame number " + frame);
-            String path = getImagePathForFrame(frame);
-            takeScreenShot(viewToScreenshot, path);
-        }
+        createTempImages(numberOfFrames);
 
         Log.d(TAG, "finished processing all frames, starting gif encoder");
 
+        addFramesToEncoder(numberOfFrames, encoder);
+
+        encoder.finish();
+
+        Log.d(TAG, "finished processing gif encoding, saving gif to disk.");
+
+        String gifPath = writeGifToDisk(gifName, outputStream);
+
+        long endTime = Calendar.getInstance().getTimeInMillis();
+
+        Log.d(TAG, "finished creating gif" + gifName);
+        Log.d(TAG, "created gif located at " + gifPath);
+        Log.d(TAG, "total gif creation time: " + String.valueOf(endTime-startTime) + "ms");
+
+        Log.d(TAG, "wiping out temp frames");
+        destroyTempImages(numberOfFrames);
+        Log.d(TAG, "clearing of temp images complete");
+
+        return gifPath;
+    }
+
+    private void addFramesToEncoder(int numberOfFrames, AnimatedGifEncoder encoder) {
         for (int frame=0; frame <numberOfFrames; frame++) {
             Log.d(TAG, "[GifEncoder] processing frame number " + frame);
             String imagePath = getImagePathForFrame(frame);
@@ -77,10 +95,9 @@ public class GifSnap {
             Bitmap bitmapToAdd = BitmapFactory.decodeFile(imageToAdd.getAbsolutePath());
             encoder.addFrame(bitmapToAdd);
         }
-        encoder.finish();
+    }
 
-        Log.d(TAG, "finished processing gif encoding, saving gif to disk.");
-
+    private String writeGifToDisk(String gifName, ByteArrayOutputStream outputStream) {
         String gifPath = getGifPathForName(gifName);
         FileOutputStream gifOutput;
 
@@ -92,14 +109,25 @@ public class GifSnap {
         } catch (IOException e) {
             Log.e(TAG, "error while saving gif to disk", e);
         }
-
-        long endTime = Calendar.getInstance().getTimeInMillis();
-
-        Log.d(TAG, "finished creating gif" + gifName);
-        Log.d(TAG, "created gif located at " + gifPath);
-        Log.d(TAG, "total gif creation time: " + String.valueOf(endTime-startTime) + "ms");
-
         return gifPath;
+    }
+
+    private void createTempImages(int numberOfFrames) {
+        for (int frame=0; frame < numberOfFrames; frame++) {
+            Log.d(TAG, "[Screenshot] processing frame number " + frame);
+            String path = getImagePathForFrame(frame);
+            takeScreenShot(viewToScreenshot, path);
+        }
+    }
+
+    private void destroyTempImages(int numberOfFrames) {
+        for (int frame=0; frame < numberOfFrames; frame++) {
+            Log.d(TAG, "[Screenshot] deleting temp image frame number " + frame);
+            String path = getImagePathForFrame(frame);
+            File file = new File(path);
+            boolean isDeleted = file.delete();
+            Log.d(TAG, "deleted frame " + frame + " delete status=" + isDeleted);
+        }
     }
 
     private void takeScreenShot(View view, String path) {

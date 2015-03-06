@@ -122,7 +122,7 @@ public class SnapActivity extends Activity {
                         @Override
                         public void run() {
                             GifSnap gifSnap = new GifSnap(contentView);
-                            String imageFileUrl = gifSnap.recordGif("GifSnap", 40);
+                            gifSnap.recordGif("GifSnap", 300);
                         }
                     };
                     Thread thread = new Thread(runnable);
