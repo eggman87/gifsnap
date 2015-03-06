@@ -121,8 +121,8 @@ public class SnapActivity extends Activity {
                     Runnable runnable = new Runnable() {
                         @Override
                         public void run() {
-                            GifSnap gifSnap = new GifSnap(contentView);
-                            gifSnap.recordGif("GifSnap", 300);
+                            GifSnap gifSnap = new GifSnap(findViewById(android.R.id.content));
+                            gifSnap.recordGif("GifSnap", 10);
                         }
                     };
                     Thread thread = new Thread(runnable);

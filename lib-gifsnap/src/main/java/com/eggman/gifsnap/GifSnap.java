@@ -4,6 +4,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 
@@ -62,7 +64,12 @@ public class GifSnap {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         encoder.start(outputStream);
 
-        createTempImages(numberOfFrames);
+        try {
+            createTempImages(numberOfFrames);
+        } catch (InterruptedException e) {
+            Log.e(TAG, "unable to create images, thread was interuptted", e);
+            throw new IllegalStateException("failure creating temp images, something stopped background processing.");
+        }
 
         Log.d(TAG, "finished processing all frames, starting gif encoder");
 
@@ -112,12 +119,17 @@ public class GifSnap {
         return gifPath;
     }
 
-    private void createTempImages(int numberOfFrames) {
+    private void createTempImages(int numberOfFrames) throws InterruptedException {
         for (int frame=0; frame < numberOfFrames; frame++) {
             Log.d(TAG, "[Screenshot] processing frame number " + frame);
             String path = getImagePathForFrame(frame);
             takeScreenShot(viewToScreenshot, path);
+            //take a screenshot evey x ms
+            Thread.sleep(250);
         }
+
+        //wait a bit since we are firing off new threads to process frames and the last one might not have finished yet. Lazy...I know.
+        Thread.sleep(1000);
     }
 
     private void destroyTempImages(int numberOfFrames) {
@@ -130,24 +142,42 @@ public class GifSnap {
         }
     }
 
-    private void takeScreenShot(View view, String path) {
-        Bitmap bitmap = Bitmap.createBitmap(view.getWidth(),
+    private void takeScreenShot(final View view, final String path) {
+        final Bitmap bitmap = Bitmap.createBitmap(view.getWidth(),
                 view.getHeight(), Bitmap.Config.RGB_565);
-        Canvas canvas = new Canvas(bitmap);
-        view.draw(canvas);
+        final Canvas canvas = new Canvas(bitmap);
 
-        OutputStream output;
-        File imageFile = new File(path);
+        Handler handler = new Handler(Looper.getMainLooper());
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                view.draw(canvas);
+                //save image off UI thread....causes lag if not.
+                saveScreenShotToDiskOnNewThread(path, bitmap);
+            }
+        });
 
-        try {
-            output = new FileOutputStream(imageFile);
-            bitmap.compress(Bitmap.CompressFormat.PNG, 90, output);
-            output.flush();
-            output.close();
+    }
 
-        } catch (IOException e) {
-            Log.e(TAG, "error while trying to capture snapshot of view", e);
-        }
+    private void saveScreenShotToDiskOnNewThread(final String path, final Bitmap bitmap) {
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                OutputStream output;
+                File imageFile = new File(path);
+
+                try {
+                    output = new FileOutputStream(imageFile);
+                    bitmap.compress(Bitmap.CompressFormat.PNG, 90, output);
+                    output.flush();
+                    output.close();
+
+                } catch (IOException e) {
+                    Log.e(TAG, "error while trying to capture snapshot of view", e);
+                }
+            }
+        });
+        thread.start();
     }
 
     private String getImagePathForFrame(int frame) {
