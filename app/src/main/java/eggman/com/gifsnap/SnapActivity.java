@@ -121,7 +121,7 @@ public class SnapActivity extends Activity {
                     }, 100);
 
                     GifSnap gifSnap = new GifSnap(findViewById(android.R.id.content));
-                    gifSnap.recordGif("GifSnap", 10, new OnGifSnapListener() {
+                    gifSnap.recordGif("GifSnap", 50, new OnGifSnapListener() {
                         @Override
                         public void onGifCompleted(String gifPath) {
 
