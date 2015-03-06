@@ -3,7 +3,7 @@ Android library for creating a gif of any view.
 
 Example Gif created from app: 
 
-![alt tag](http://i.imgur.com/ZmudgdJ.gif)
+![alt tag](http://i.imgur.com/tpET5SH.gif)
 
 This library uses Gif Encoder from https://github.com/nbadal/android-gif-encoder. Please follow any license restrictions from that code (AndroidGifEncoder). 
 
