@@ -140,10 +140,11 @@ public class GifSnap {
     private void createTempImages(int numberOfFrames) throws InterruptedException {
         for (int frame=0; frame < numberOfFrames; frame++) {
             Log.d(TAG, "[Screenshot] processing frame number " + frame);
+
             String path = getImagePathForFrame(frame);
             takeScreenShot(viewToScreenshot, path);
             //take a screenshot evey x ms
-            Thread.sleep(85);
+            Thread.sleep(110);
         }
 
         //wait a bit since we are firing off new threads to process frames and the last one might not have finished yet. Lazy...I know.
