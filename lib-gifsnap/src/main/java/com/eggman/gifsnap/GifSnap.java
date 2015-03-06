@@ -17,13 +17,14 @@ import java.util.Calendar;
 /**
  * Created by mharris on 3/4/15.
  *
+ * GifSnap for recording a view and saving it as a gif.
  */
 public class GifSnap {
 
     private View viewToScreenshot;
-    private static final String TAG = "GifSnap";
-
     private String storageDirectory;
+
+    private static final String TAG = "GifSnap";
 
     /**
      * Initializes the GifSnap
