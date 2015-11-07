@@ -1,6 +1,8 @@
 # gifsnap
 Android library for creating a gif of any view. 
 
+Created during a quick hour hackathon, needs optimization. 
+
 Example gif created from app: 
 
 ![alt tag](http://i.imgur.com/tpET5SH.gif)
